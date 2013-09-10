@@ -35,7 +35,6 @@ public class IdentifierTest {
     assertThat(g.rule(EcmaScriptTokenType.IDENTIFIER)).as("future reserved words")
         .matches("implements")
         .matches("interface")
-        .matches("let")
         .matches("package")
         .matches("private")
         .matches("protected")

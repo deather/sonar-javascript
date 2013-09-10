@@ -56,6 +56,10 @@ import static org.sonar.javascript.api.EcmaScriptKeyword.VAR;
 import static org.sonar.javascript.api.EcmaScriptKeyword.VOID;
 import static org.sonar.javascript.api.EcmaScriptKeyword.WHILE;
 import static org.sonar.javascript.api.EcmaScriptKeyword.WITH;
+
+import static org.sonar.javascript.api.EcmaScriptKeyword.LET;
+import static org.sonar.javascript.api.EcmaScriptKeyword.CONST;
+
 import static org.sonar.javascript.api.EcmaScriptPunctuator.AND;
 import static org.sonar.javascript.api.EcmaScriptPunctuator.ANDAND;
 import static org.sonar.javascript.api.EcmaScriptPunctuator.AND_EQU;
@@ -202,6 +206,16 @@ public enum EcmaScriptGrammar implements GrammarRuleKey {
   VARIABLE_DECLARATION_LIST_NO_IN,
   VARIABLE_DECLARATION,
   VARIABLE_DECLARATION_NO_IN,
+  LET_STATEMENT,
+  LET_DECLARATION_LIST,
+  LET_DECLARATION_LIST_NO_IN,
+  LET_DECLARATION,
+  LET_DECLARATION_NO_IN,
+  CONST_STATEMENT,
+  CONST_DECLARATION_LIST,
+  CONST_DECLARATION_LIST_NO_IN,
+  CONST_DECLARATION,
+  CONST_DECLARATION_NO_IN,
   INITIALISER,
   INITIALISER_NO_IN,
   EMPTY_STATEMENT,
@@ -228,6 +242,7 @@ public enum EcmaScriptGrammar implements GrammarRuleKey {
   CATCH,
   FINALLY,
   DEBUGGER_STATEMENT,
+  CALL_STATEMENT,
 
   // A.5 Functions and Programs
 
@@ -532,6 +547,8 @@ public enum EcmaScriptGrammar implements GrammarRuleKey {
     b.rule(STATEMENT).is(b.firstOf(
         BLOCK,
         VARIABLE_STATEMENT,
+        CONST_STATEMENT,
+        LET_STATEMENT,
         EMPTY_STATEMENT,
         LABELLED_STATEMENT,
         EXPRESSION_STATEMENT,
@@ -544,7 +561,8 @@ public enum EcmaScriptGrammar implements GrammarRuleKey {
         SWITCH_STATEMENT,
         THROW_STATEMENT,
         TRY_STATEMENT,
-        DEBUGGER_STATEMENT));
+        DEBUGGER_STATEMENT,
+        CALL_STATEMENT));
     b.rule(BLOCK).is(LCURLYBRACE, b.optional(STATEMENT_LIST), RCURLYBRACE);
     b.rule(STATEMENT_LIST).is(b.oneOrMore(b.firstOf(STATEMENT, permissive(FUNCTION_DECLARATION))));
     b.rule(VARIABLE_STATEMENT).is(VAR, VARIABLE_DECLARATION_LIST, EOS);
@@ -552,6 +570,19 @@ public enum EcmaScriptGrammar implements GrammarRuleKey {
     b.rule(VARIABLE_DECLARATION_LIST_NO_IN).is(VARIABLE_DECLARATION_NO_IN, b.zeroOrMore(COMMA, VARIABLE_DECLARATION_NO_IN));
     b.rule(VARIABLE_DECLARATION).is(IDENTIFIER, b.optional(INITIALISER));
     b.rule(VARIABLE_DECLARATION_NO_IN).is(IDENTIFIER, b.optional(INITIALISER_NO_IN));
+
+    b.rule(CONST_STATEMENT).is(CONST, CONST_DECLARATION, EOS);
+    b.rule(CONST_DECLARATION_LIST).is(CONST_DECLARATION, b.zeroOrMore(COMMA, CONST_DECLARATION));
+    b.rule(CONST_DECLARATION_LIST_NO_IN).is(CONST_DECLARATION_NO_IN, b.zeroOrMore(COMMA, CONST_DECLARATION_NO_IN));
+    b.rule(CONST_DECLARATION).is(IDENTIFIER, b.optional(INITIALISER));
+    b.rule(CONST_DECLARATION_NO_IN).is(IDENTIFIER, b.optional(INITIALISER_NO_IN));
+
+    b.rule(LET_STATEMENT).is(LET, LET_DECLARATION, EOS);
+    b.rule(LET_DECLARATION_LIST).is(LET_DECLARATION, b.zeroOrMore(COMMA, LET_DECLARATION));
+    b.rule(LET_DECLARATION_LIST_NO_IN).is(LET_DECLARATION_NO_IN, b.zeroOrMore(COMMA, LET_DECLARATION_NO_IN));
+    b.rule(LET_DECLARATION).is(IDENTIFIER, b.optional(INITIALISER));
+    b.rule(LET_DECLARATION_NO_IN).is(IDENTIFIER, b.optional(INITIALISER_NO_IN));
+
     b.rule(INITIALISER).is(EQU, ASSIGNMENT_EXPRESSION);
     b.rule(INITIALISER_NO_IN).is(EQU, ASSIGNMENT_EXPRESSION_NO_IN);
     b.rule(EMPTY_STATEMENT).is(SEMI);
@@ -599,6 +630,8 @@ public enum EcmaScriptGrammar implements GrammarRuleKey {
     b.rule(CATCH).is(EcmaScriptKeyword.CATCH, LPARENTHESIS, IDENTIFIER, RPARENTHESIS, BLOCK);
     b.rule(FINALLY).is(EcmaScriptKeyword.FINALLY, BLOCK);
     b.rule(DEBUGGER_STATEMENT).is(DEBUGGER, EOS);
+
+    b.rule(CALL_STATEMENT).is(LPARENTHESIS, FUNCTION_EXPRESSION, RPARENTHESIS, ARGUMENTS);
   }
 
   /**

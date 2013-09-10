@@ -64,6 +64,7 @@ public enum EcmaScriptKeyword implements TokenType, GrammarRuleKey {
 
   CLASS("class"),
   CONST("const"),
+  LET("let"),
   ENUM("enum"),
   EXPORT("export"),
   EXTENDS("extends"),
